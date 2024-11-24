@@ -186,6 +186,7 @@ async def send_promotion(client: Client, msg_ids: list[int]):
             except: #Exception as e:
                 pass
                 #print(f"{client.me.first_name}: {dialog.chat.title}: AutoPromoErr - {e}")
+        await asyncio.sleep(1)
     await join_random_chat(client)
 
 # ----- Handlers ----- #
