@@ -324,7 +324,7 @@ async def add_client(_, message: Message):
         msg = await message.reply_text("Starting the client...")
         try:
             client = Client(
-                f"Auto Promo #{user_id}",
+                f"Auto Promo {phone_number.text}",
                 API_ID,
                 API_HASH,
                 session_string=session_string,
