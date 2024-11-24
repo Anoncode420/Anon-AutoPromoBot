@@ -53,6 +53,7 @@ Avaible Commands;
  - `/list` (`posts` OR `clients`) ; to get list of posts OR clients.
  - `/new` ; to add new client.
  - `/remove` (user id) ; to remove client.
+ - `/addgroups` (group username space by space.
 """
 
 # ----- Database ----- #
@@ -420,6 +421,7 @@ async def main():
         await bot.send_message(PROMOTION_CHANNEL, "**Bot Started!**")
     except:
         pass
+
     await auto_promotion()
 
     await idle()
