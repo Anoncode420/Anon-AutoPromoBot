@@ -11,7 +11,16 @@ from pyrogram.types import (
     InlineKeyboardMarkup
 )
 from pyrogram.enums import ChatType
-from pyrogram.errors import SessionPasswordNeeded
+from pyrogram.errors import (
+    SessionPasswordNeeded,
+    PeerFlood,
+    InviteHashInvalid,
+    ChatWriteForbidden,
+    UserBannedInChannel,
+    ChatAdminRequired,
+    ChatInvalid,
+    ChannelPrivate,
+)
 
 from pymongo import MongoClient
 
@@ -86,6 +95,24 @@ def is_post(message_id: int) -> bool:
 def get_all_posts() -> list[int]:
     return [data["message_id"] for data in database.posts.find({})]
 
+# ---- ---- #
+
+def add_group(username: str) -> None:
+    database.groups.insert_one(
+        {"username": username}
+    )
+
+def is_group(username: str) -> bool:
+    return bool(database.groups.find_one({"username": username}))
+
+def get_all_groups() -> list[str]:
+    return [data['username'] for data in database.groups.find({})]
+
+def remove_chat(username: str) -> None:
+    database.groups.delete_one(
+        {"username": username}
+    )
+
 # ----- Functions ----- #
 
 async def setup_clients() -> None:
@@ -123,6 +150,28 @@ async def join_promotion_channel():
     except:
         pass
 
+async def join_random_chat(client: Client) -> None:
+    all_chats = get_all_groups()
+    random_chat = random.choice(all_chats)
+    try:
+        await client.join_chat(random_chat)
+        print(f"client {client.me.id} Successfully joined the chat: @{random_chat}")
+
+    except PeerFlood:
+        print("Error: Too many join requests. Please try again later.")
+
+    except UserBannedInChannel:
+        print("Error: The bot or user is banned from this chat.")
+        return await join_random_chat(client)
+
+    except (InviteHashInvalid, ChatWriteForbidden, ChatAdminRequired, ChannelPrivate, ChatInvalid):
+        print("Error: The chat ID or username is invalid.")
+        remove_chat(random_chat)
+        return await join_random_chat(client)
+
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+
 async def send_promotion(client: Client, msg_ids: list[int]):
     async for dialog in client.get_dialogs():
         dialog: Dialog
@@ -137,6 +186,7 @@ async def send_promotion(client: Client, msg_ids: list[int]):
             except: #Exception as e:
                 pass
                 #print(f"{client.me.first_name}: {dialog.chat.title}: AutoPromoErr - {e}")
+    await join_random_chat(client)
 
 # ----- Handlers ----- #
 
@@ -320,6 +370,30 @@ async def remove_client(_, message: Message):
             client_list.remove(client)
             break
     await wait.reply(f"**Removed** {user_id} from auto promotion!")
+
+@bot.on_message(filters.command("addgroups") & filters.private & filters.user(AUTH_USERS))
+async def add_grpups(_, message: Message):
+    args: str = "".join(message.text.split(maxsplit=1)[1:]).split(" ", 0)
+    if len(args) == 0:
+        return await message.reply("Please provide group list space by space")
+
+    if " " in args:
+        group_list = args.split(" ")
+    else:
+        group_list = [args]
+
+    wait = await message.reply(f"Adding {len(group_list)} in DB")
+
+    for group_username in group_list:
+        if "@" in group_username:
+            group_username = group_username.replace("@", "")
+
+        elif "https://t.me/" in group_username:
+            group_username = str(group_username.split("/")[3])
+
+        add_group(group_username)
+
+    await wait.edit(f"Added All groups in {len(group_list)} in DB, now we have total {len(get_all_groups())} groups in Database.")
 
 # ----- Main ---- #
 
