@@ -179,7 +179,7 @@ async def send_promotion(client: Client, msg_ids: list[int]):
         async for dialog in client.get_dialogs():
             dialog: Dialog
             if dialog.chat.type in [ChatType.GROUP, ChatType.SUPERGROUP]:
-            try:
+                try:
                     post = await client.get_messages(
                         PROMOTION_CHANNEL,
                         int(random.choice(msg_ids))
