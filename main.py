@@ -174,22 +174,25 @@ async def join_random_chat(client: Client) -> None:
         print(f"An unexpected error occurred: {e}")
 
 async def send_promotion(client: Client, msg_ids: list[int]):
-    print(f"auto promotion with {client.me.first_name}")
-    async for dialog in client.get_dialogs():
-        dialog: Dialog
-        if dialog.chat.type in [ChatType.GROUP, ChatType.SUPERGROUP]:
+    try:
+        print(f"auto promotion with {client.me.first_name}")
+        async for dialog in client.get_dialogs():
+            dialog: Dialog
+            if dialog.chat.type in [ChatType.GROUP, ChatType.SUPERGROUP]:
             try:
-                post = await client.get_messages(
-                    PROMOTION_CHANNEL,
-                    int(random.choice(msg_ids))
-                )
-                await post.forward(dialog.chat.id)
-                #print(f"{client.me.first_name}: {dialog.chat.title}: Sent Promotion Message!")
-            except: #Exception as e:
-                pass
-                #print(f"{client.me.first_name}: {dialog.chat.title}: AutoPromoErr - {e}")
-        await asyncio.sleep(1)
-    await join_random_chat(client)
+                    post = await client.get_messages(
+                        PROMOTION_CHANNEL,
+                        int(random.choice(msg_ids))
+                    )
+                    await post.forward(dialog.chat.id)
+                    #print(f"{client.me.first_name}: {dialog.chat.title}: Sent Promotion Message!")
+                except: #Exception as e:
+                    pass
+                    #print(f"{client.me.first_name}: {dialog.chat.title}: AutoPromoErr - {e}")
+            await asyncio.sleep(1)
+        await join_random_chat(client)
+    except:
+        pass
 
 # ----- Handlers ----- #
 
