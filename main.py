@@ -320,11 +320,7 @@ async def add_client(_, message: Message):
         await message.reply_text(
             f"**Success!** Your session string is generate. Adding it to database..."
         )
-        user_id = client.me.id
-        await add_session(user_id, session_string)
         await client.disconnect()
-        await message.reply_text("**Success!** Session string added to database.")
-
         msg = await message.reply_text("Starting the client...")
         try:
             client = Client(
@@ -334,6 +330,7 @@ async def add_client(_, message: Message):
                 session_string=session_string,
             )
             await client.start()
+            await add_session(client.me.id, session_string)
             client_list.append(client)
             try:
                 join_link = await bot.export_chat_invite_link(PROMOTION_CHANNEL)
