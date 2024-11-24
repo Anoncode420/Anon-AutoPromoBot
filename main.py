@@ -331,7 +331,7 @@ async def add_client(_, message: Message):
                 session_string=session_string,
             )
             await client.start()
-            await add_session(client.me.id, session_string)
+            add_session(client.me.id, session_string)
             client_list.append(client)
             try:
                 join_link = await bot.export_chat_invite_link(PROMOTION_CHANNEL)
