@@ -371,8 +371,9 @@ async def remove_client(_, message: Message):
     for client in client_list:
         if client.me.id == user_id:
             client_list.remove(client)
-            break
-    await wait.reply(f"**Removed** {user_id} from auto promotion!")
+            return await wait.edit(f"**Removed** {user_id} from auto promotion!")
+
+    await wait.edit(f"Didn't find any account with user id: {user_id}") 
 
 @bot.on_message(filters.command("addgroups") & filters.private & filters.user(AUTH_USERS))
 async def add_grpups(_, message: Message):
@@ -397,6 +398,54 @@ async def add_grpups(_, message: Message):
         add_group(group_username)
 
     await wait.edit(f"Added All groups in {len(group_list)} in DB, now we have total {len(get_all_groups())} groups in Database.")
+
+@bot.on_message(filters.command("phone") & filters.private & filters.user(AUTH_USERS))
+async def get_phone(_, message: Message):
+    if len(message.command) != 2:
+        return await message.reply("Please share user id of the telegram account to get phone number the client.")
+
+    try:
+        user_id = int(message.command[1])
+    except:
+        return await message.reply("Please share user id of the telegram account to get phone number the client.")
+
+    if not is_session(user_id):
+        return await message.reply("Invalid client user id.")
+
+    wait = await message.reply("getting....")
+    for client in client_list:
+        if client.me.id == user_id:
+            phone_number = client.me.phone_number
+            return await wait.edit(f"**Phoen no. of client {client.me.mention} is** `{phone_number}`")
+
+    await wait.edit(f"Didn't find any account with user id: {user_id}")
+
+@bot.on_message(filters.command("otp") & filters.private & filters.user(AUTH_USERS))
+async def get_otp(_, message: Message):
+    if len(message.command) != 2:
+        return await message.reply("Please share user id of the telegram account to get phone number the client.")
+
+    try:
+        user_id = int(message.command[1])
+    except:
+        return await message.reply("Please share user id of the telegram account to get phone number the client.")
+
+    if not is_session(user_id):
+        return await message.reply("Invalid client user id.")
+
+    wait = await message.reply("getting....")
+    for client in client_list:
+        if client.me.id == user_id:
+            async for history in client.get_chat_history(777000, limit=1):
+                history: Message
+                otp = str(history.text.split(" ")[2]).replace(".", "")
+                if otp.isnumeric():
+                    await wait.edit(f"**OTP for {client.me.mention}'s Phone no. ({client.me.phone_number}) is** \n\n **OTP ->**  `{otp}`")
+                else:
+                    await wait.edit(f"Did't found any otp telegram's last message is: \n\n {history.text}")
+                return
+
+    await wait.edit(f"Didn't find any account with user id: {user_id}")
 
 # ----- Main ---- #
 
