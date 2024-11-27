@@ -26,8 +26,8 @@ from pymongo import MongoClient
 
 # ----- Config ---- #
 
-API_ID = 4277083
-API_HASH = "bb0ddae0921fc020ce61faae2d1261d5"
+API_ID = 29109105
+API_HASH = "c143d6b96d375ff62551271cf7795c50"
 BOT_TOKEN = "7862024785:AAEYtO3CW5N_kLvn5b5RvK7G1zeyTlCOCII"
 DB_URI = "mongodb+srv://OTPBot:OTPBot@otpbot.tf42f.mongodb.net/?retryWrites=true&w=majority&appName=OTPBot"
 PROMOTION_CHANNEL = -1002310923659
