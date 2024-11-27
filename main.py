@@ -168,7 +168,7 @@ async def join_random_chat(client: Client) -> None:
     except (InviteHashInvalid, ChatWriteForbidden, ChatAdminRequired, ChannelPrivate, ChatInvalid):
         print("Error: The chat ID or username is invalid.")
         remove_chat(random_chat)
-        return await join_random_chat(client)
+        #return await join_random_chat(client)
 
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
