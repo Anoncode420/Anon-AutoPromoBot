@@ -168,9 +168,10 @@ async def join_random_chat(client: Client) -> None:
     except (InviteHashInvalid, ChatWriteForbidden, ChatAdminRequired, ChannelPrivate, ChatInvalid):
         print("Error: The chat ID or username is invalid.")
         remove_chat(random_chat)
-        #return await join_random_chat(client)
+        return await join_random_chat(client)
 
     except Exception as e:
+        remove_chat(random_chat)
         print(f"An unexpected error occurred: {e}")
 
 async def send_promotion(client: Client, msg_ids: list[int]):
@@ -190,9 +191,9 @@ async def send_promotion(client: Client, msg_ids: list[int]):
                     print(f"{client.me.first_name}: {dialog.chat.title}: AutoPromoErr - {e}")
 
             await asyncio.sleep(1)
-        await join_random_chat(client)
     except:
         pass
+    await join_random_chat(client)
 
 # ----- Handlers ----- #
 
