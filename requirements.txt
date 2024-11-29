@@ -1,4 +1,4 @@
 pyroaddon
-pyrogram
+pyrogram==2.0.102
 pymongo
 tgcrypto
